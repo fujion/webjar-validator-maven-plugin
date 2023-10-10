@@ -15,7 +15,7 @@ public class WebjarValidatorMojo extends AbstractMojo {
     @Parameter(property = "project", readonly = true, required = true)
     private MavenProject project;
 
-    @Parameter(property = "rules", readonly = true, required = true)
+    @Parameter(property = "rules", required = true)
     private List<String> rules;
 
     /**
