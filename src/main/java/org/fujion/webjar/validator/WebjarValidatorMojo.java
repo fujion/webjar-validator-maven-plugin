@@ -13,10 +13,16 @@ import java.util.List;
 public class WebjarValidatorMojo extends AbstractMojo {
 
     @Parameter(property = "project", readonly = true, required = true)
+    @SuppressWarnings("all")
     private MavenProject project;
 
     @Parameter(property = "rules", required = true)
+    @SuppressWarnings("all")
     private List<String> rules;
+
+    @Parameter(property = "skip")
+    @SuppressWarnings("all")
+    private boolean skip;
 
     /**
      * Parses the list of rules and executes each one.
@@ -25,6 +31,10 @@ public class WebjarValidatorMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException {
+        if (skip) {
+            getLog().info("Skip property was set to true.  Exiting...");
+        }
+
         if (rules.isEmpty()) {
             getLog().warn("No validation rules were specified.  Exiting...");
             return;
@@ -35,15 +45,25 @@ public class WebjarValidatorMojo extends AbstractMojo {
         boolean failed = false;
 
         for (String ruleStr : rules) {
-            AbstractRule rule = factory.createRule(ruleStr);
-            boolean passes = rule.passes();
-            getLog().info(String.format("Rule %s: %s", passes ? "succeeded" : "failed   ", ruleStr));
-            failed |= !passes;
+            try {
+                AbstractRule rule = factory.createRule(ruleStr);
+                boolean passes = rule.passes();
+                logResult(ruleStr, passes ? "succeeded" : "failed");
+                failed |= !passes;
+            } catch (Exception e) {
+                logResult(ruleStr, "error");
+                getLog().error("  The error was: " + e.getMessage());
+                failed = true;
+            }
         }
 
         if (failed) {
             throw new MojoExecutionException("Validation failed.");
         }
+    }
+
+    private void logResult(String ruleStr, String result) {
+        getLog().info(String.format("Rule %-9s: %s", result, ruleStr));
     }
 
     @Override

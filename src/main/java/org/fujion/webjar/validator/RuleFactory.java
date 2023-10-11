@@ -1,5 +1,6 @@
 package org.fujion.webjar.validator;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.maven.project.MavenProject;
 
@@ -32,7 +33,9 @@ public class RuleFactory {
      */
     public AbstractRule createRule(String ruleStr) {
         List<String> args = parse(ruleStr);
-        RuleType ruleType = RuleType.valueOf(args.remove(0).toUpperCase());
+        String ruleTypeStr = args.remove(0);
+        RuleType ruleType = EnumUtils.getEnumIgnoreCase(RuleType.class, ruleTypeStr);
+        Validate.isTrue(ruleType != null, "Did not recognize the rule name: %s", ruleTypeStr);
 
         String filePath = String.format(TARGET_FILENAME,
                 project.getBuild().getOutputDirectory(),
