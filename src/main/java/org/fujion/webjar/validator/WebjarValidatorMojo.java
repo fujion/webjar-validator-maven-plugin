@@ -51,8 +51,7 @@ public class WebjarValidatorMojo extends AbstractMojo {
                 logResult(ruleStr, passes ? "succeeded" : "failed");
                 failed |= !passes;
             } catch (Exception e) {
-                logResult(ruleStr, "error");
-                getLog().error("  The error was: " + e.getMessage());
+                logError(ruleStr, e);
                 failed = true;
             }
         }
@@ -66,8 +65,13 @@ public class WebjarValidatorMojo extends AbstractMojo {
         getLog().info(String.format("Rule %-9s: %s", result, ruleStr));
     }
 
+    private void logError(String ruleStr, Exception e) {
+        logResult(ruleStr, "exception");
+        getLog().error("The exception was: " + e.getMessage().replace("\n", "\n    "));
+    }
+
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ":\n" + String.join("\n   ", rules);
+        return getClass().getSimpleName() + ":\n" + String.join("\n\t", rules);
     }
 }
