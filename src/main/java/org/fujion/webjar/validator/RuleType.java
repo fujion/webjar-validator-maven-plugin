@@ -8,6 +8,7 @@ enum RuleType {
     FILE_NOT_EXISTS,
     DIR_EXISTS,
     DIR_NOT_EXISTS,
+    FILE_COUNT,
     FILE_CONTAINS,
     FILE_NOT_CONTAINS
 }

@@ -47,6 +47,7 @@ public class RuleFactory {
         return switch (ruleType) {
             case DIR_EXISTS -> new DirExistsRule(file, args);
             case DIR_NOT_EXISTS -> new DirNotExistsRule(file, args);
+            case FILE_COUNT -> new FileCountRule(file, args);
             case FILE_EXISTS -> new FileExistsRule(file, args);
             case FILE_NOT_EXISTS -> new FileNotExistsRule(file, args);
             case FILE_CONTAINS -> new FileContainsRule(file, args);
