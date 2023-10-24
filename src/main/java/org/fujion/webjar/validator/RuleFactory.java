@@ -6,9 +6,11 @@ import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Factory for generating rules from raw rule strings.
@@ -35,7 +37,7 @@ public class RuleFactory {
         List<String> args = parse(ruleStr);
         String ruleTypeStr = args.remove(0);
         RuleType ruleType = EnumUtils.getEnumIgnoreCase(RuleType.class, ruleTypeStr);
-        Validate.isTrue(ruleType != null, "Did not recognize the rule name: %s", ruleTypeStr);
+        Validate.isTrue(ruleType != null, "Did not recognize the rule name: %s.\nValid rules are:\n%s", ruleTypeStr, validRuleMessage());
 
         String filePath = String.format(TARGET_FILENAME,
                 project.getBuild().getOutputDirectory(),
@@ -45,6 +47,7 @@ public class RuleFactory {
         File file = new File(filePath);
 
         return switch (ruleType) {
+            case DIR_COUNT -> new DirCountRule(file, args);
             case DIR_EXISTS -> new DirExistsRule(file, args);
             case DIR_NOT_EXISTS -> new DirNotExistsRule(file, args);
             case FILE_COUNT -> new FileCountRule(file, args);
@@ -79,5 +82,8 @@ public class RuleFactory {
         return args;
     }
 
+    private String validRuleMessage() {
+        return Arrays.stream(RuleType.values()).map(ruleType -> "\t" + ruleType.name().toLowerCase()).collect(Collectors.joining("\n"));
+    }
 
 }
