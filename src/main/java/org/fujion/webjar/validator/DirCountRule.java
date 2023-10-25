@@ -5,6 +5,7 @@ import org.apache.commons.lang3.Validate;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,6 +28,6 @@ public class DirCountRule extends AbstractRule {
         Validate.isTrue(file.isDirectory(), "Argument is not a directory.");
         FileFilter filter = WildcardFileFilter.builder().setWildcards("*").get();
         File[] matches = file.listFiles(filter);
-        return matches != null && matches.length == count;
+        return matches != null && count == Arrays.stream(matches).filter(File::isDirectory).count();
     }
 }
